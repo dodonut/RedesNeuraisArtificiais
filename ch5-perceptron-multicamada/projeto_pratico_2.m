@@ -1,4 +1,4 @@
-  function [w1, w2, eqm_curr,epoch] = projeto_pratico_1(X,d)
+  function [w1, w2, eqm_curr,epoch] = projeto_pratico_2(X,d,has_momentum)
     epsilon = 10^-6;
     min = -2.4;
     max = 2.4;
@@ -7,13 +7,15 @@
     eqm_bef = 0;
     eqm_curr = 1;
     amount = size(X,1);
-    w1 = (min + (max-min) * rand(10,3))/amount;
-    w2 = (min + (max-min) * rand(1,10))/amount;
+    w1 = (min + (max-min) * rand(15,4))/amount;
+    w2 = (min + (max-min) * rand(3,15))/amount;
     b1 = rand();
     b2 = rand();
     xplot = [];
     yplot = [];
-    
+    a = 0.9;
+    old_w2 = w2;
+    old_w1 = w1;
     while abs(eqm_curr - eqm_bef) > epsilon
       eqm_bef = eqm_curr;
       yy2 = [];
@@ -24,14 +26,33 @@
         yy2 = [yy2 y2];
         
         sig2 = -(dk'-y2).*sigmoidPrime(y2);
-        w2 = w2 - n * sig2 * y2';
+        tmpw2 = w2 - n * sig2 * y1';
+        if has_momentum == true
+          old_w2 = w2;
+          tmpw2 = tmpw2 + a * (tmpw2 - old_w2);
+        endif
+        w2 = tmpw2;
   
         sig1 = (w2'*sig2).*sigmoidPrime(y1);
-        w1 = w1 - n * sig1 * xk;
+        tmpw1 = w1 - n * sig1 * xk;
+        
+        if has_momentum == true
+          old_w1 = w1;
+          tmpw1 = tmpw1 + a * (tmpw1 - old_w1);
+        endif
+        w1 = tmpw1;
+        
       endfor
       epoch = epoch + 1;
       eqm_curr = eqm(yy2,d,amount);
+      if mod(epoch, 50) == 0
+        epoch
+        eqm_curr
+      endif
+      xplot = [xplot epoch];
+      yplot = [yplot eqm_curr];
     endwhile
+    plot(xplot, yplot);
     
   endfunction
   

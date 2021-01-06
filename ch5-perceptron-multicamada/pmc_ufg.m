@@ -1,9 +1,16 @@
-function [w1,w2,y2,epoch] = pmc_ufg(x,d,w1,w2,b1,b2)
+function [w1,w2,y2,epoch] = pmc_ufg()
   epsilon = 0.0001;
   n = 0.5;
   epoch = 0;
+  x = [0.05 0.1];
+  d = [0.01 0.99];
+  w1 = [0.15 0.2; 0.25 0.3];
+  w2 = [0.4 0.45; 0.5 0.55];
+  b1 = 0.35;
+  b2 = 0.6;
   [i1, i2, y1, y2] = forward(w1,w2,b1,b2,x);
-  while erro(d,y2) > epsilon
+
+  while epoch <= 10000
     prime = sigmoidPrime(y2);
     sig2 = -(d'-y2).*sigmoidPrime(y2);
     w2 = w2 - n * sig2 * y1';
@@ -12,9 +19,6 @@ function [w1,w2,y2,epoch] = pmc_ufg(x,d,w1,w2,b1,b2)
     w1 = w1 - n * sig1 * x;
     [i1, i2, y1, y2] = forward(w1,w2,b1,b2,x);
     epoch = epoch + 1;
-    if mod(epoch, 500) == 0
-      epoch
-    endif
   endwhile
 endfunction
 

@@ -1,4 +1,4 @@
-  function [w1, w2, eqm_curr,epoch] = projeto_pratico_1(X,d)
+  function [w1, w2, eqm_curr,epoch, yy2] = projeto_pratico_1(X,d)
     epsilon = 10^-6;
     min = -2.4;
     max = 2.4;
@@ -11,8 +11,6 @@
     w2 = (min + (max-min) * rand(1,10))/amount;
     b1 = rand();
     b2 = rand();
-    xplot = [];
-    yplot = [];
     
     while abs(eqm_curr - eqm_bef) > epsilon
       eqm_bef = eqm_curr;
@@ -24,13 +22,17 @@
         yy2 = [yy2 y2];
         
         sig2 = -(dk'-y2).*sigmoidPrime(y2);
-        w2 = w2 - n * sig2 * y2';
+        w2 = w2 - n * sig2 * y1';
   
         sig1 = (w2'*sig2).*sigmoidPrime(y1);
         w1 = w1 - n * sig1 * xk;
       endfor
       epoch = epoch + 1;
       eqm_curr = eqm(yy2,d,amount);
+      if mod(epoch,50) == 0
+        epoch
+        eqm_curr
+      endif
     endwhile
     
   endfunction
